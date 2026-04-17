@@ -1,0 +1,826 @@
+// Meridiana — schema Prisma
+// ===========================
+// Regulatório: LGPD art. 11 (dados sensíveis de saúde), CFM 1.821/2007 (retenção 20 anos),
+// CFM 2.324/22 (prescrição cannabis), RDC 327/2019 + RDC 660/2022 (ANVISA).
+//
+// Design:
+// - IDs cuid (não sequenciais, LGPD-friendly)
+// - Soft-delete em tudo que é clínico (deleted_at) — 20 anos de retenção
+// - Audit events encadeados por hash (tamper-evidence)
+// - Multi-clinic via Clinic + ClinicMembership
+// - pgvector pronto para RAG de protocolos (comentado; requer extensão no Postgres)
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto, vector]
+}
+
+// ============================================================================
+// IAM / Auth
+// ============================================================================
+
+enum UserRole {
+  medico
+  paciente
+  admin
+  dpo
+  sistema
+}
+
+enum PlanTier {
+  free
+  solo
+  clinica
+  enterprise
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password_hash   String
+  nome_completo   String
+  cpf             String?   @unique
+  telefone_e164   String?
+  role            UserRole
+  mfa_secret      String?   // TOTP secret (criptografado at-rest por kms ideal)
+  mfa_enabled     Boolean   @default(false)
+  email_verified  Boolean   @default(false)
+  last_login_at   DateTime?
+  failed_attempts Int       @default(0)
+  locked_until    DateTime?
+  criado_em       DateTime  @default(now())
+  atualizado_em   DateTime  @updatedAt
+  deleted_at      DateTime?
+
+  medico            Medico?
+  paciente          Paciente?
+  refresh_tokens    RefreshToken[]
+  audit_events      AuditEvent[]
+  clinic_memberships ClinicMembership[]
+  consents          Consent[]
+
+  @@index([role])
+  @@index([deleted_at])
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash  String    @unique
+  expires_at  DateTime
+  revoked_at  DateTime?
+  user_agent  String?
+  ip          String?
+  criado_em   DateTime  @default(now())
+
+  @@index([user_id])
+  @@index([expires_at])
+}
+
+// ============================================================================
+// Clínica (multi-tenant)
+// ============================================================================
+
+enum ClinicRole {
+  owner
+  admin
+  medico
+  recepcao
+  financeiro
+}
+
+model Clinic {
+  id             String    @id @default(cuid())
+  razao_social   String
+  nome_fantasia  String
+  cnpj           String    @unique
+  cnes           String?   // Cadastro Nacional Estab. Saúde
+  endereco_json  Json      // { logradouro, numero, cep, uf, municipio, ibge }
+  telefone_e164  String?
+  email          String?
+  website        String?
+  plano          PlanTier  @default(solo)
+  criado_em      DateTime  @default(now())
+  atualizado_em  DateTime  @updatedAt
+  deleted_at     DateTime?
+
+  memberships    ClinicMembership[]
+  medicos        Medico[]
+  pacientes      Paciente[]
+  subscriptions  Subscription[]
+
+  @@index([deleted_at])
+}
+
+model ClinicMembership {
+  id         String     @id @default(cuid())
+  clinic_id  String
+  clinic     Clinic     @relation(fields: [clinic_id], references: [id], onDelete: Cascade)
+  user_id    String
+  user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role       ClinicRole
+  criado_em  DateTime   @default(now())
+  deleted_at DateTime?
+
+  @@unique([clinic_id, user_id])
+  @@index([user_id])
+}
+
+// ============================================================================
+// Pessoas clínicas
+// ============================================================================
+
+enum CRMStatus {
+  ativo
+  suspenso
+  cassado
+  nao_verificado
+}
+
+model Medico {
+  id                  String    @id @default(cuid())
+  user_id             String    @unique
+  user                User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  clinic_id           String?
+  clinic              Clinic?   @relation(fields: [clinic_id], references: [id])
+  crm_numero          String
+  crm_uf              String
+  crm_status          CRMStatus @default(nao_verificado)
+  crm_verificado_em   DateTime?
+  crm_proxima_revisao DateTime?
+  especialidade       String[]  // ["dor", "neurologia", "psiquiatria"]
+  rqe                 String[]  // Registro Qualificação Especialidade
+  icp_brasil_thumbprint String? // fingerprint do cert A3 conectado
+  icp_brasil_provider   String? // "soluti", "birdid", "vidaas"
+  assinatura_url      String?   // PNG upload (adicional ao ICP-Brasil)
+  bio                 String?
+  criado_em           DateTime  @default(now())
+  atualizado_em       DateTime  @updatedAt
+  deleted_at          DateTime?
+
+  pacientes_atendidos Paciente[]
+  prescricoes         Prescricao[]
+  telemed_sessions    TelemedicinaSession[]
+
+  @@unique([crm_uf, crm_numero])
+  @@index([crm_status])
+  @@index([clinic_id])
+}
+
+enum SexoBiologico {
+  masculino
+  feminino
+  intersexo
+  nao_informado
+}
+
+enum ViaAcesso {
+  anvisa_industrializado
+  anvisa_rdc_660_importacao
+  magistral
+  associacao_hc
+  cultivo_hc
+}
+
+model Paciente {
+  id                       String         @id @default(cuid())
+  user_id                  String?        @unique
+  user                     User?          @relation(fields: [user_id], references: [id])
+  clinic_id                String?
+  clinic                   Clinic?        @relation(fields: [clinic_id], references: [id])
+  medico_responsavel_id    String
+  medico_responsavel       Medico         @relation(fields: [medico_responsavel_id], references: [id])
+
+  nome_completo            String
+  nome_social              String?
+  cpf                      String         @unique
+  rg                       String?
+  cns                      String?        // Cartão Nacional de Saúde
+  data_nascimento          DateTime       @db.Date
+  sexo_biologico           SexoBiologico  @default(nao_informado)
+  identidade_genero        String?
+  peso_kg                  Decimal?       @db.Decimal(5, 2)
+  altura_cm                Int?
+
+  telefone_e164            String?
+  email                    String?
+  endereco_json            Json?
+
+  comorbidades             String[]
+  medicamentos_em_uso      String[]       // free-text por enquanto; idealmente FK MedicamentoConcomitante
+  alergias                 String[]
+  historico_familiar       Json?
+
+  via_acesso_preferida     ViaAcesso?
+  responsavel_legal_cpf    String?        // pediatria/curatela
+  responsavel_legal_nome   String?
+
+  consentimento_clinico_em DateTime?
+  consentimento_pesquisa_em DateTime?
+  consentimento_marketing_em DateTime?
+
+  criado_em                DateTime       @default(now())
+  atualizado_em            DateTime       @updatedAt
+  deleted_at               DateTime?
+  retencao_ate             DateTime?      // CFM 1.821 — 20 anos após última consulta
+
+  prontuario               Prontuario?
+  prescricoes              Prescricao[]
+  tracker_logs             TrackerLog[]
+  telemed_sessions         TelemedicinaSession[]
+  exames                   ExameLaboratorial[]
+
+  @@index([clinic_id])
+  @@index([medico_responsavel_id])
+  @@index([deleted_at])
+  @@index([nome_completo])
+}
+
+// ============================================================================
+// Prontuário
+// ============================================================================
+
+enum EvidenciaIndicacao {
+  A
+  B
+  C
+  D
+}
+
+model Prontuario {
+  id                     String   @id @default(cuid())
+  paciente_id            String   @unique
+  paciente               Paciente @relation(fields: [paciente_id], references: [id], onDelete: Cascade)
+  medico_responsavel_id  String
+  cid10_principal        String?
+  cid10_secundarios      String[]
+  evidencia_indicacao    EvidenciaIndicacao?
+  resumo_atual           String?  @db.Text
+  versao                 Int      @default(1)
+  criado_em              DateTime @default(now())
+  atualizado_em          DateTime @updatedAt
+
+  eventos                ProntuarioEvento[]
+}
+
+enum TipoEvento {
+  consulta
+  tracker
+  prescricao
+  import_660
+  nota_voz
+  exame_anexado
+  telemedicina
+  anamnese
+  revisao_titulacao
+}
+
+model ProntuarioEvento {
+  id                  String     @id @default(cuid())
+  prontuario_id       String
+  prontuario          Prontuario @relation(fields: [prontuario_id], references: [id], onDelete: Cascade)
+  tipo                TipoEvento
+  payload             Json
+  transcricao         String?    @db.Text
+  transcricao_modelo  String?
+  criado_por_user_id  String
+  criado_em           DateTime   @default(now())
+
+  @@index([prontuario_id])
+  @@index([tipo])
+  @@index([criado_em])
+}
+
+// ============================================================================
+// Catálogo de produtos
+// ============================================================================
+
+enum ClasseProduto {
+  oleo_full_spectrum
+  oleo_isolado_cbd
+  oleo_rich_thc
+  flor_in_natura
+  resina
+  topico
+  capsula
+  spray_oral
+  extrato_concentrado
+  outro
+}
+
+enum FormaFarmaceutica {
+  solucao_oral
+  capsula_mole
+  capsula_rigida
+  spray_bucal
+  creme
+  gel
+  pomada
+  flor_seca
+}
+
+enum StatusRegulatorio {
+  anvisa_industrializado_rdc1015
+  anvisa_produto_classe_autorizada
+  importacao_660
+  magistral
+  associacao_hc
+}
+
+model Produto {
+  id                      String             @id @default(cuid())
+  nome_comercial          String
+  fabricante              String
+  pais_origem             String             @default("BR")
+  classe                  ClasseProduto
+  forma_farmaceutica      FormaFarmaceutica
+  cbd_mg_por_ml           Decimal?           @db.Decimal(8, 3)
+  thc_mg_por_ml           Decimal?           @db.Decimal(8, 3)
+  cbd_mg_por_unidade      Decimal?           @db.Decimal(8, 3)
+  thc_mg_por_unidade      Decimal?           @db.Decimal(8, 3)
+  outros_canabinoides     Json?              // { cbg_mg_ml, cbn_mg_ml, cbc_mg_ml, ... }
+  volume_ml               Decimal?           @db.Decimal(8, 2)
+  unidades_por_embalagem  Int?
+  status_regulatorio      StatusRegulatorio
+  anvisa_registro         String?            // registro de produto industrializado
+  ean                     String?            @unique
+  preco_sugerido_brl      Decimal?           @db.Decimal(10, 2)
+  foto_url                String?
+  bula_url                String?
+  disponivel              Boolean            @default(true)
+  criado_em               DateTime           @default(now())
+  atualizado_em           DateTime           @updatedAt
+
+  prescricoes             Prescricao[]
+
+  @@index([classe])
+  @@index([fabricante])
+  @@index([status_regulatorio])
+  @@index([disponivel])
+}
+
+// ============================================================================
+// Prescrição + receituário ANVISA
+// ============================================================================
+
+enum TipoReceita {
+  A // entorpecentes — amarela
+  B // psicotrópicos — azul
+}
+
+enum ViaRegulatoria {
+  anvisa_industrializado
+  anvisa_rdc_660_importacao
+  magistral
+  associacao_hc
+}
+
+enum Status660 {
+  nao_aplicavel
+  rascunho
+  submetido
+  em_analise
+  aprovado
+  negado
+  expirado
+}
+
+model Prescricao {
+  id                          String            @id @default(cuid())
+  paciente_id                 String
+  paciente                    Paciente          @relation(fields: [paciente_id], references: [id])
+  medico_id                   String
+  medico                      Medico            @relation(fields: [medico_id], references: [id])
+  produto_id                  String?
+  produto                     Produto?          @relation(fields: [produto_id], references: [id])
+  produto_descricao           String            // snapshot do produto (imutabilidade médica)
+
+  cbd_mg_por_dose             Decimal           @db.Decimal(8, 3)
+  thc_mg_por_dose             Decimal           @db.Decimal(8, 3)
+  posologia_texto             String            @db.Text
+  dose_alvo_mg_dia            Decimal           @db.Decimal(8, 3)
+  duracao_dias                Int
+
+  tipo_receita                TipoReceita
+  via_regulatoria             ViaRegulatoria
+  notificacao_receita_numero  String?           // NR oficial
+  pdf_receita_url             String?
+  pdf_oficio_660_url          String?
+
+  status_660                  Status660         @default(nao_aplicavel)
+  submissao_660_protocolo     String?
+  submissao_660_em            DateTime?
+  validade_660_ate            DateTime?
+
+  assinatura_digital_id       String?           @unique
+  assinatura_digital          AssinaturaDigital? @relation(fields: [assinatura_digital_id], references: [id])
+
+  criado_em                   DateTime          @default(now())
+  atualizado_em               DateTime          @updatedAt
+  deleted_at                  DateTime?
+
+  @@index([paciente_id])
+  @@index([medico_id])
+  @@index([status_660])
+  @@index([validade_660_ate])
+}
+
+// ============================================================================
+// Assinatura digital ICP-Brasil
+// ============================================================================
+
+enum ProviderICP {
+  soluti
+  birdid
+  vidaas
+  certisign
+  serasa
+  mock
+}
+
+enum TipoCertificado {
+  A1
+  A3
+  e_cnpj_a1
+  e_cnpj_a3
+  digital_birdid
+}
+
+model AssinaturaDigital {
+  id                  String          @id @default(cuid())
+  provider            ProviderICP
+  tipo_certificado    TipoCertificado
+  titular_nome        String
+  titular_cpf         String
+  thumbprint          String          // SHA-256 do certificado
+  serial_number       String
+  assinado_em         DateTime
+  documento_hash_sha256 String
+  cadenca_pades       Boolean         @default(true)
+  timestamp_server    String?         // TSA URL
+  raw_signature_b64   String          @db.Text
+  validacao_json      Json?           // resposta do provider
+  criado_em           DateTime        @default(now())
+
+  prescricao          Prescricao?
+
+  @@index([titular_cpf])
+  @@index([thumbprint])
+}
+
+// ============================================================================
+// Tracker (M4)
+// ============================================================================
+
+enum EntradaTracker {
+  app
+  sms
+  whatsapp
+  voz
+  email
+  presencial
+}
+
+enum ViaAdministracao {
+  oral
+  sublingual
+  inalada
+  dermatologica
+  bucal
+  retal
+}
+
+model TrackerLog {
+  id                 String            @id @default(cuid())
+  paciente_id        String
+  paciente           Paciente          @relation(fields: [paciente_id], references: [id])
+  prescricao_id      String?
+
+  dose_mg            Decimal?          @db.Decimal(8, 3)
+  via                ViaAdministracao?
+  sintomas           Json              // { dor: 4, sono: 8, ansiedade: 3 }
+  efeitos_colaterais String[]
+  contexto           Json?             // { sono_horas, estresse_1_10, observacao }
+  humor_score        Int?
+  entrada_via        EntradaTracker    @default(app)
+  transcricao_voz    String?           @db.Text
+  criado_em          DateTime          @default(now())
+
+  @@index([paciente_id, criado_em])
+  @@index([prescricao_id])
+}
+
+// ============================================================================
+// Telemedicina (M5)
+// ============================================================================
+
+enum StatusSessao {
+  agendada
+  em_andamento
+  finalizada
+  cancelada
+  no_show
+}
+
+model TelemedicinaSession {
+  id                      String       @id @default(cuid())
+  medico_id               String
+  medico                  Medico       @relation(fields: [medico_id], references: [id])
+  paciente_id             String
+  paciente                Paciente     @relation(fields: [paciente_id], references: [id])
+  agendado_para           DateTime
+  iniciada_em             DateTime?
+  finalizada_em           DateTime?
+  status                  StatusSessao @default(agendada)
+
+  provider                String       @default("livekit")
+  room_name               String       @unique
+  room_sid                String?
+  livekit_token_medico    String?      @db.Text
+  livekit_token_paciente  String?      @db.Text
+
+  brief_pre_consulta      String?      @db.Text
+  gravacao_url            String?
+  transcricao             String?      @db.Text
+  prontuario_evento_id    String?
+
+  criado_em               DateTime     @default(now())
+  atualizado_em           DateTime     @updatedAt
+
+  @@index([medico_id, agendado_para])
+  @@index([paciente_id])
+  @@index([status])
+}
+
+// ============================================================================
+// Exames laboratoriais
+// ============================================================================
+
+enum TipoExame {
+  hemograma
+  funcao_renal
+  funcao_hepatica
+  lipidograma
+  glicemia
+  hormonios
+  urinalise
+  toxicologico
+  outros
+}
+
+model ExameLaboratorial {
+  id                String    @id @default(cuid())
+  paciente_id       String
+  paciente          Paciente  @relation(fields: [paciente_id], references: [id])
+  tipo              TipoExame
+  titulo            String
+  data_coleta       DateTime  @db.Date
+  laboratorio       String?
+  medico_solicitante_id String?
+  arquivo_url       String?   // PDF upload (S3/R2)
+  arquivo_sha256    String?
+  resultados_json   Json?     // estrutura parseada {analito, valor, unidade, ref_min, ref_max, alterado}
+  observacoes       String?   @db.Text
+  criado_em         DateTime  @default(now())
+  atualizado_em     DateTime  @updatedAt
+  deleted_at        DateTime?
+
+  @@index([paciente_id, data_coleta])
+  @@index([tipo])
+}
+
+// ============================================================================
+// Consentimento LGPD (art. 11)
+// ============================================================================
+
+enum FinalidadeConsent {
+  prestacao_assistencia_saude
+  pesquisa_anonimizada
+  marketing
+  telemedicina
+  compartilhamento_familiar
+  farmacovigilancia_anvisa
+}
+
+enum StatusConsent {
+  ativo
+  revogado
+  expirado
+}
+
+model Consent {
+  id             String            @id @default(cuid())
+  user_id        String
+  user           User              @relation(fields: [user_id], references: [id])
+  finalidade     FinalidadeConsent
+  status         StatusConsent     @default(ativo)
+  texto_versao   String            // ex: "v2026-01"
+  texto_url      String?
+  concedido_em   DateTime          @default(now())
+  revogado_em    DateTime?
+  expira_em      DateTime?
+  ip             String?
+  user_agent     String?
+
+  @@index([user_id, finalidade])
+  @@index([status])
+}
+
+// ============================================================================
+// Billing (Stripe/Pagar.me)
+// ============================================================================
+
+enum SubscriptionStatus {
+  trial
+  active
+  past_due
+  canceled
+  paused
+}
+
+enum BillingProvider {
+  stripe
+  pagarme
+  iugu
+  asaas
+  mock
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  clinic_id            String
+  clinic               Clinic             @relation(fields: [clinic_id], references: [id], onDelete: Cascade)
+  provider             BillingProvider
+  provider_customer_id String
+  provider_sub_id      String?            @unique
+  plan                 PlanTier
+  status               SubscriptionStatus @default(trial)
+  trial_end_at         DateTime?
+  current_period_start DateTime?
+  current_period_end   DateTime?
+  cancel_at_period_end Boolean            @default(false)
+  criado_em            DateTime           @default(now())
+  atualizado_em        DateTime           @updatedAt
+
+  invoices             Invoice[]
+
+  @@index([clinic_id])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  draft
+  open
+  paid
+  uncollectible
+  void
+  refunded
+}
+
+model Invoice {
+  id                 String         @id @default(cuid())
+  subscription_id    String
+  subscription       Subscription   @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+  provider_invoice_id String?       @unique
+  amount_brl         Decimal        @db.Decimal(10, 2)
+  status             InvoiceStatus  @default(draft)
+  due_at             DateTime?
+  paid_at            DateTime?
+  invoice_url        String?
+  pdf_url            String?
+  criado_em          DateTime       @default(now())
+
+  @@index([subscription_id])
+  @@index([status])
+}
+
+// ============================================================================
+// Mensageria (WhatsApp Business)
+// ============================================================================
+
+enum CanalMensagem {
+  whatsapp_meta
+  sms_twilio
+  email_ses
+  push_expo
+  in_app
+}
+
+enum StatusMensagem {
+  pendente
+  enviada
+  entregue
+  lida
+  falhou
+  rejeitada
+}
+
+model Mensagem {
+  id                 String         @id @default(cuid())
+  paciente_id        String?
+  canal              CanalMensagem
+  template_name      String?        // nome do template aprovado Meta
+  conteudo_render    String         @db.Text
+  destinatario_e164  String?
+  provider_message_id String?
+  status             StatusMensagem @default(pendente)
+  erro               String?
+  criado_em          DateTime       @default(now())
+  enviado_em         DateTime?
+  entregue_em        DateTime?
+  lido_em            DateTime?
+
+  @@index([paciente_id])
+  @@index([status])
+  @@index([criado_em])
+}
+
+// ============================================================================
+// Audit trail (LGPD + CFM) — hash-chained, tamper-evident
+// ============================================================================
+
+enum AuditAction {
+  login
+  logout
+  login_failed
+  mfa_enabled
+  mfa_disabled
+  password_changed
+  user_created
+  user_updated
+  user_deleted
+  paciente_created
+  paciente_read
+  paciente_updated
+  paciente_deleted
+  paciente_exported
+  prontuario_read
+  prontuario_evento_added
+  prescricao_emitted
+  prescricao_signed
+  prescricao_deleted
+  rdc660_oficio_generated
+  rdc660_submitted
+  telemed_started
+  telemed_finished
+  consent_granted
+  consent_revoked
+  ai_call
+  ai_budget_exceeded
+  export_requested
+  anonymization_executed
+  webhook_received
+  admin_impersonation
+}
+
+model AuditEvent {
+  id              String      @id @default(cuid())
+  seq             BigInt      @unique @default(autoincrement())
+  user_id         String?
+  user            User?       @relation(fields: [user_id], references: [id])
+  action          AuditAction
+  resource        String      // "paciente:cuid123" ou "prescricao:cuid456"
+  ip              String?
+  user_agent      String?
+  payload         Json?
+  hash_anterior   String?     // sha256 do evento anterior
+  hash_atual      String      // sha256(seq|user|action|resource|payload|hash_anterior)
+  criado_em       DateTime    @default(now())
+
+  @@index([user_id, criado_em])
+  @@index([action])
+  @@index([resource])
+}
+
+// ============================================================================
+// AI calls log (budget + observabilidade)
+// ============================================================================
+
+model AiCall {
+  id               String   @id @default(cuid())
+  paciente_id      String?
+  medico_id        String?
+  feature          String   // "titulacao", "prontuario_soap", "tracker_insight", ...
+  provider         String
+  model            String
+  prompt_hash      String
+  prompt_tokens    Int
+  completion_tokens Int
+  cost_brl         Decimal  @db.Decimal(10, 6)
+  latency_ms       Int
+  cache_hit        Boolean  @default(false)
+  budget_exceeded  Boolean  @default(false)
+  pii_redacted     Boolean  @default(true)
+  criado_em        DateTime @default(now())
+
+  @@index([paciente_id, criado_em])
+  @@index([feature])
+  @@index([cache_hit])
+}

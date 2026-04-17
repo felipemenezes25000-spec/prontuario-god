@@ -1,0 +1,15 @@
+{
+  "paciente_id": "00000000-0000-0000-0000-000000000002",
+  "produto": {
+    "nome_comercial": "CBD Rich Oil 30mg/ml",
+    "fabricante": "Aurora",
+    "cbd_mg_por_dose": 30,
+    "thc_mg_por_dose": 1,
+    "via_administracao": "sublingual"
+  },
+  "posologia_texto": "5 gotas 2x/dia",
+  "dose_alvo_mg_dia": 40,
+  "duracao_dias": 90,
+  "via_acesso": "anvisa_rdc_660_importacao",
+  "laudo_clinico": "Paciente com fibromialgia refrataria a duloxetina e pregabalina por mais de 6 meses. Indicacao de cannabis medicinal CBD-predominante para controle de dor cronica conforme RDC 327/2019 atualizada."
+}

@@ -1,0 +1,17 @@
+**/node_modules
+**/.next
+**/dist
+**/.turbo
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+*.md
+!README.md
+!DEPLOY.md
+apps/web
+docs
+ops
+.vscode
+*.log

@@ -1,0 +1,11 @@
+{
+  "indicacao": "fibromialgia",
+  "idade": 47,
+  "peso_kg": 68,
+  "sexo_biologico": "feminino",
+  "comorbidades": ["depressão moderada"],
+  "medicamentos_em_uso": ["duloxetina 60mg/dia", "pregabalina 150mg 2x/dia"],
+  "tentativas_previas": ["amitriptilina sem resposta", "fisioterapia sem alívio"],
+  "alergias": [],
+  "especialidade_prescritor": "dor"
+}

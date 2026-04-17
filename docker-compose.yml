@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: meridiana-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: meridiana
+      POSTGRES_PASSWORD: meridiana
+      POSTGRES_DB: meridiana
+    ports:
+      - "5432:5432"
+    volumes:
+      - meridiana_pg:/var/lib/postgresql/data
+      - ./ops/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meridiana -d meridiana"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: meridiana-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - meridiana_redis:/data
+
+  # Whisper self-hosted para transcrição de telemedicina / notas de voz
+  # Desabilitado por padrão — descomente e provisione GPU para usar.
+  # whisper:
+  #   image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+  #   container_name: meridiana-whisper
+  #   restart: unless-stopped
+  #   environment:
+  #     ASR_MODEL: base
+  #     ASR_ENGINE: openai_whisper
+  #   ports:
+  #     - "9000:9000"
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+
+  # Ollama para PII local (Llama 3.1 8B)
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: meridiana-ollama
+  #   restart: unless-stopped
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - meridiana_ollama:/root/.ollama
+
+volumes:
+  meridiana_pg:
+  meridiana_redis:
+  # meridiana_ollama:

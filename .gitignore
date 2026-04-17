@@ -1,0 +1,35 @@
+node_modules
+dist
+build
+.turbo
+.next
+.expo
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# logs
+*.log
+pnpm-debug.log*
+npm-debug.log*
+
+# editor
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# tsbuildinfo
+*.tsbuildinfo
+
+# coverage
+coverage
+.nyc_output
+
+# misc
+.cache
+tmp
+temp

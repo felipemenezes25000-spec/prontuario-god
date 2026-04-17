@@ -1,0 +1,15 @@
+{
+  "paciente_id": "00000000-0000-0000-0000-000000000002",
+  "produto": {
+    "nome_comercial": "CBD 200",
+    "fabricante": "Verdemed",
+    "cbd_mg_por_dose": 50,
+    "thc_mg_por_dose": 0,
+    "via_administracao": "sublingual",
+    "forma_farmaceutica": "oleo"
+  },
+  "posologia_texto": "5mg sublingual 12/12h por 3 dias, depois 10mg 12/12h conforme tolerancia, maximo 40mg/dia",
+  "dose_alvo_mg_dia": 40,
+  "duracao_dias": 30,
+  "via_acesso": "anvisa_industrializado"
+}
