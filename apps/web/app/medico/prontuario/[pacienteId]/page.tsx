@@ -12,8 +12,9 @@ import { Sparkline } from "@/components/decorative/Sparkline";
 import { useToast } from "@/providers/ToastProvider";
 import { useVoiceInput } from "@/hooks/useVoice";
 import { getPacienteFull, postConsulta, type PacienteFull } from "@/lib/api";
+import { ConsultaIAAvancada } from "@/components/medical/ConsultaIAAvancada";
 
-type TabId = "timeline" | "tracker" | "ficha";
+type TabId = "consulta-ia" | "timeline" | "tracker" | "ficha";
 
 export default function ProntuarioPage() {
   const params = useParams<{ pacienteId: string }>();
@@ -23,7 +24,7 @@ export default function ProntuarioPage() {
   const [data, setData] = useState<PacienteFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<TabId>("timeline");
+  const [tab, setTab] = useState<TabId>("consulta-ia");
 
   async function reload() {
     try {
@@ -54,12 +55,14 @@ export default function ProntuarioPage() {
           {/* Main */}
           <div>
             <TabBar value={tab} onChange={setTab} counts={{
+              "consulta-ia": 0,
               timeline: data.eventos.length + data.prescricoes.length,
               tracker: data.tracker_logs.length,
               ficha: 0,
             }} />
 
             <div className="mt-4">
+              {tab === "consulta-ia" && <ConsultaIAAvancada pacienteNome={data.paciente.nome_completo} />}
               {tab === "timeline" && <Timeline data={data} />}
               {tab === "tracker" && <TrackerTab logs={data.tracker_logs} />}
               {tab === "ficha" && <FichaTab paciente={data.paciente} prontuario={data.prontuario} />}
@@ -203,6 +206,7 @@ function MiniStat({ label, value, hint, tone = "neutral" }: { label: string; val
 
 function TabBar({ value, onChange, counts }: { value: TabId; onChange: (t: TabId) => void; counts: Record<TabId, number> }) {
   const tabs: { id: TabId; label: string }[] = [
+    { id: "consulta-ia", label: "✨ Consulta IA" },
     { id: "timeline", label: "Histórico" },
     { id: "tracker", label: "Diário" },
     { id: "ficha", label: "Ficha clínica" },
