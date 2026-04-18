@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const PROTOCOLOS = [
   {
@@ -107,7 +108,7 @@ export default function ProtocolosPage() {
         <Card>
           <CardHeader
             title="Biblioteca"
-            action={<Button size="sm">+ Protocolo customizado</Button>}
+            action={<Button size="sm" onClick={demoAction("Abrindo editor de protocolo", "info")}>+ Protocolo customizado</Button>}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {PROTOCOLOS.map((p, i) => (

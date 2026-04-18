@@ -7,6 +7,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { useToast } from "@/providers/ToastProvider";
 import { PACIENTE_DEMO_ID } from "@/lib/api";
 
 const PACIENTES = [
@@ -31,6 +32,7 @@ const PACIENTES = [
 ];
 
 export default function PacientesPage() {
+  const toast = useToast();
   const [busca, setBusca] = useState("");
   const [filtroRota, setFiltroRota] = useState<string>("todos");
 
@@ -90,7 +92,7 @@ export default function PacientesPage() {
                   {f.label}
                 </button>
               ))}
-              <Button size="sm">+ Novo paciente</Button>
+              <Button size="sm" onClick={() => toast.show("Abrindo formulário de novo paciente (LGPD consent.)", "info")}>+ Novo paciente</Button>
             </div>
           </div>
 
@@ -135,7 +137,7 @@ export default function PacientesPage() {
                           <Button variant="secondary" size="sm">Abrir</Button>
                         </Link>
                       ) : (
-                        <Button variant="secondary" size="sm" disabled>Abrir</Button>
+                        <Button variant="secondary" size="sm" onClick={() => toast.show(`Abrindo prontuário de ${p.nome}…`, "info")}>Abrir</Button>
                       )}
                     </td>
                   </tr>

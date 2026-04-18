@@ -4,17 +4,20 @@ import { AppShell } from "@/components/shell/AppShell";
 import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
+import { PACIENTE_DEMO_ID } from "@/lib/api";
 
 const HOJE = [
-  { hora: "08:30", paciente: "Maria Silva", tipo: "Retorno", cid: "M79.7", status: "confirmada", cor: "leaf" },
-  { hora: "09:00", paciente: "Lucia Fernandes", tipo: "Titulação", cid: "G40.4", status: "confirmada", cor: "leaf" },
-  { hora: "10:00", paciente: "Carlos Pereira", tipo: "Primeira consulta", cid: "G20", status: "confirmada", cor: "ochre" },
-  { hora: "11:30", paciente: "Rosa Albuquerque", tipo: "Telemedicina", cid: "F41.1", status: "aguardando", cor: "sky" },
-  { hora: "14:00", paciente: "Pedro Martins", tipo: "Retorno", cid: "M54.5", status: "confirmada", cor: "leaf" },
-  { hora: "15:00", paciente: "Gabriela Torres", tipo: "Ajuste RDC 660", cid: "C50.9", status: "confirmada", cor: "ember" },
-  { hora: "16:30", paciente: "Henrique Dias", tipo: "Telemedicina", cid: "G35", status: "confirmada", cor: "sky" },
-  { hora: "17:30", paciente: "Beatriz Campos", tipo: "Retorno", cid: "N80.9", status: "aguardando", cor: "ochre" },
+  { hora: "08:30", paciente: "Maria Silva", tipo: "Retorno", cid: "M79.7", status: "confirmada", cor: "leaf", href: `/medico/prontuario/${PACIENTE_DEMO_ID}` },
+  { hora: "09:00", paciente: "Lucia Fernandes", tipo: "Titulação", cid: "G40.4", status: "confirmada", cor: "leaf", href: "/medico/pacientes" },
+  { hora: "10:00", paciente: "Carlos Pereira", tipo: "Primeira consulta", cid: "G20", status: "confirmada", cor: "ochre", href: "/medico/pacientes" },
+  { hora: "11:30", paciente: "Rosa Albuquerque", tipo: "Telemedicina", cid: "F41.1", status: "aguardando", cor: "sky", href: "/medico/telemedicina" },
+  { hora: "14:00", paciente: "Pedro Martins", tipo: "Retorno", cid: "M54.5", status: "confirmada", cor: "leaf", href: "/medico/pacientes" },
+  { hora: "15:00", paciente: "Gabriela Torres", tipo: "Ajuste RDC 660", cid: "C50.9", status: "confirmada", cor: "ember", href: "/medico/receita" },
+  { hora: "16:30", paciente: "Henrique Dias", tipo: "Telemedicina", cid: "G35", status: "confirmada", cor: "sky", href: "/medico/telemedicina" },
+  { hora: "17:30", paciente: "Beatriz Campos", tipo: "Retorno", cid: "N80.9", status: "aguardando", cor: "ochre", href: "/medico/pacientes" },
 ];
 
 const SEMANA = ["Seg 14", "Ter 15", "Qua 16", "Qui 17 (hoje)", "Sex 18", "Sáb 19", "Dom 20"];
@@ -51,7 +54,7 @@ export default function AgendaPage() {
         <Card>
           <CardHeader
             title="Visão semanal"
-            action={<div className="flex gap-2"><Button variant="secondary" size="sm">← Semana</Button><Button variant="secondary" size="sm">Hoje</Button><Button variant="secondary" size="sm">Semana →</Button></div>}
+            action={<div className="flex gap-2"><Button variant="secondary" size="sm" onClick={demoAction("Navegando para semana anterior", "info")}>← Semana</Button><Button variant="secondary" size="sm" onClick={demoAction("Voltando ao dia de hoje", "info")}>Hoje</Button><Button variant="secondary" size="sm" onClick={demoAction("Navegando para próxima semana", "info")}>Semana →</Button></div>}
           />
           <div className="grid grid-cols-7 gap-2 mt-4">
             {SEMANA.map((dia, i) => (
@@ -67,7 +70,7 @@ export default function AgendaPage() {
         <Card>
           <CardHeader
             title="Hoje — 17 abr"
-            action={<Button size="sm">+ Nova consulta</Button>}
+            action={<Button size="sm" onClick={demoAction("Nova consulta — abrindo formulário…", "info")}>+ Nova consulta</Button>}
           />
           <div className="divide-y divide-border mt-2">
             {HOJE.map((c) => (
@@ -81,7 +84,9 @@ export default function AgendaPage() {
                 <Badge tone={c.status === "confirmada" ? "success" : "warm"}>
                   {c.status}
                 </Badge>
-                <Button variant="secondary" size="sm">Abrir</Button>
+                <Link href={c.href}>
+                  <Button variant="secondary" size="sm">Abrir</Button>
+                </Link>
               </div>
             ))}
           </div>

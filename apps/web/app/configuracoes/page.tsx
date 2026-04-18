@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const INTEGRACOES = [
   { nome: "ICP-Brasil (Valid VIDaaS)", status: "conectado", desc: "Assinatura digital A3 cloud", cor: "leaf" },
@@ -45,7 +46,7 @@ export default function ConfiguracoesPage() {
                 <div className="text-text text-xs font-mono">VIDaaS A3 · válido até 31/12/2028</div>
               </div>
             </div>
-            <Button variant="secondary" size="sm" className="mt-4">Editar perfil</Button>
+            <Button variant="secondary" size="sm" className="mt-4" onClick={demoAction("Abrindo edição de perfil", "info")}>Editar perfil</Button>
           </Card>
 
           <Card>
@@ -68,7 +69,7 @@ export default function ConfiguracoesPage() {
                 <div className="text-text text-xs">Av. Paulista 1000 · São Paulo/SP</div>
               </div>
             </div>
-            <Button variant="secondary" size="sm" className="mt-4">Dados da clínica</Button>
+            <Button variant="secondary" size="sm" className="mt-4" onClick={demoAction("Abrindo dados da clínica", "info")}>Dados da clínica</Button>
           </Card>
 
           <Card>
@@ -86,14 +87,14 @@ export default function ConfiguracoesPage() {
                   <div className="text-text font-medium">Sessões ativas</div>
                   <div className="text-xs text-muted">2 dispositivos</div>
                 </div>
-                <Button variant="secondary" size="sm">Gerenciar</Button>
+                <Button variant="secondary" size="sm" onClick={demoAction("Listando sessões ativas", "info")}>Gerenciar</Button>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-text font-medium">Senha</div>
                   <div className="text-xs text-muted">alterada em 2/abr</div>
                 </div>
-                <Button variant="secondary" size="sm">Alterar</Button>
+                <Button variant="secondary" size="sm" onClick={demoAction("Abrindo troca de senha", "info")}>Alterar</Button>
               </div>
             </div>
           </Card>
@@ -112,7 +113,7 @@ export default function ConfiguracoesPage() {
                 <Badge tone={i.status === "conectado" ? "success" : i.status === "pendente" ? "warm" : "neutral"}>
                   {i.status}
                 </Badge>
-                <Button variant="secondary" size="sm">Config</Button>
+                <Button variant="secondary" size="sm" onClick={demoAction("Abrindo configuração da integração", "info")}>Config</Button>
               </div>
             ))}
           </div>

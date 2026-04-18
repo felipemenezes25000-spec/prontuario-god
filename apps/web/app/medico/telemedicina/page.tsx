@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const AGENDADAS = [
   { hora: "11:30", paciente: "Rosa Albuquerque", duracao: 30, motivo: "Avaliação de titulação", status: "aguardando_paciente", sala: "meridiana-abc123" },
@@ -49,7 +50,7 @@ export default function TelemedicinaPage() {
         <Card>
           <CardHeader
             title="Hoje"
-            action={<Button size="sm">+ Agendar telemed</Button>}
+            action={<Button size="sm" onClick={demoAction("Abrindo formulário de agendamento", "info")}>+ Agendar telemed</Button>}
           />
           <div className="space-y-3 mt-3">
             {AGENDADAS.map((s) => (
@@ -64,12 +65,12 @@ export default function TelemedicinaPage() {
                 {s.status === "aguardando_paciente" ? (
                   <>
                     <Badge tone="warm">aguardando paciente</Badge>
-                    <Button size="sm">Entrar na sala</Button>
+                    <Button size="sm" onClick={demoAction("Abrindo sala LiveKit…", "info")}>Entrar na sala</Button>
                   </>
                 ) : (
                   <>
                     <Badge tone="neutral">agendada</Badge>
-                    <Button variant="secondary" size="sm">Abrir sala</Button>
+                    <Button variant="secondary" size="sm" onClick={demoAction("Sala será aberta no horário agendado", "info")}>Abrir sala</Button>
                   </>
                 )}
               </div>
@@ -92,8 +93,8 @@ export default function TelemedicinaPage() {
                   <div className="text-sm text-muted mt-1 leading-relaxed">{h.brief}</div>
                 </div>
                 <div className="flex gap-2 items-start">
-                  <Button variant="secondary" size="sm">Transcrição</Button>
-                  <Button variant="secondary" size="sm">Prontuário</Button>
+                  <Button variant="secondary" size="sm" onClick={demoAction("Abrindo transcrição Whisper", "info")}>Transcrição</Button>
+                  <Button variant="secondary" size="sm" onClick={demoAction("Abrindo prontuário", "info")}>Prontuário</Button>
                 </div>
               </div>
             ))}

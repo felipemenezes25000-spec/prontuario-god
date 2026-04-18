@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const EXAMES = [
   {
@@ -114,7 +115,7 @@ export default function ExamesPage() {
                   <div className="text-xs text-muted">{p.tipo}</div>
                 </div>
                 <Badge tone={p.vence.includes("atrasado") ? "danger" : "warm"}>{p.vence}</Badge>
-                <Button variant="secondary" size="sm">Cobrar</Button>
+                <Button variant="secondary" size="sm" onClick={demoAction("Lembrete enviado via WhatsApp")}>Cobrar</Button>
               </div>
             ))}
           </div>
@@ -123,7 +124,7 @@ export default function ExamesPage() {
         <Card>
           <CardHeader
             title="Exames recentes"
-            action={<Button size="sm">+ Solicitar exame</Button>}
+            action={<Button size="sm" onClick={demoAction("Solicitação de exame criada — paciente será notificado via WhatsApp")}>+ Solicitar exame</Button>}
           />
           <div className="space-y-4 mt-3">
             {EXAMES.map((e, i) => (

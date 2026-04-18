@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const AUDIT = [
   { ts: "16:42:18", seq: 1842, user: "Dra. Ana (medico)", action: "prescricao_signed", resource: "prescricao:mar-abr-024", ip: "187.54.33.12", hash: "0x7a9b...c21e" },
@@ -61,7 +62,7 @@ export default function CompliancePage() {
         <Card>
           <CardHeader
             title="Conformidade regulatória"
-            action={<Button variant="secondary" size="sm">Baixar certificado</Button>}
+            action={<Button variant="secondary" size="sm" onClick={demoAction("Certificado LGPD baixado (PDF)")}>Baixar certificado</Button>}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
             {CONFORMIDADE.map((c, i) => (
@@ -86,7 +87,7 @@ export default function CompliancePage() {
         <Card>
           <CardHeader
             title="Audit log — últimas 10 ações"
-            action={<Button variant="secondary" size="sm">Verificar integridade chain</Button>}
+            action={<Button variant="secondary" size="sm" onClick={demoAction("Chain verificado — 1.842 eventos íntegros")}>Verificar integridade chain</Button>}
           />
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-xs">

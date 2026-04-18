@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const FATURAS = [
   { data: "15 abr 2026", paciente: "Maria Silva", servico: "Consulta retorno", valor: 350, status: "paga", forma: "PIX" },
@@ -107,16 +108,16 @@ export default function FinanceiroPage() {
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button variant="secondary" size="sm">Upgrade plano</Button>
-            <Button variant="secondary" size="sm">Baixar NF</Button>
-            <Button variant="secondary" size="sm">Alterar forma</Button>
+            <Button variant="secondary" size="sm" onClick={demoAction("Redirecionando para Stripe Billing Portal", "info")}>Upgrade plano</Button>
+            <Button variant="secondary" size="sm" onClick={demoAction("NFSe baixada")}>Baixar NF</Button>
+            <Button variant="secondary" size="sm" onClick={demoAction("Abrindo opções de pagamento", "info")}>Alterar forma</Button>
           </div>
         </Card>
 
         <Card>
           <CardHeader
             title="Faturas recentes"
-            action={<Button size="sm">+ Nova fatura</Button>}
+            action={<Button size="sm" onClick={demoAction("Fatura criada")}>+ Nova fatura</Button>}
           />
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-sm">

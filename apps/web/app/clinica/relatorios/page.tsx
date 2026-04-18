@@ -4,6 +4,7 @@ import { AppShell } from "@/components/shell/AppShell";
 import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 import { Button } from "@/components/ui/Button";
 import { Sparkline } from "@/components/decorative/Sparkline";
 
@@ -112,7 +113,7 @@ export default function RelatoriosPage() {
         <Card>
           <CardHeader
             title="Cohort por CID"
-            action={<Button variant="secondary" size="sm">Exportar CSV (anonimizado)</Button>}
+            action={<Button variant="secondary" size="sm" onClick={demoAction("CSV anonimizado (k≥5) baixado")}>Exportar CSV (anonimizado)</Button>}
           />
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-sm">

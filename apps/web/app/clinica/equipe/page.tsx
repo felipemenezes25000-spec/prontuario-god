@@ -5,6 +5,7 @@ import { Topbar } from "@/components/shell/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { demoAction } from "@/lib/demo-actions";
 
 const EQUIPE = [
   { iniciais: "AB", nome: "Dra. Ana Beatriz Lima", crm: "123456/SP", esp: ["Dor", "Cuidados paliativos"], role: "owner", pacientes: 47, status: "online" },
@@ -46,7 +47,7 @@ export default function EquipePage() {
         <Card>
           <CardHeader
             title="Membros da clínica"
-            action={<Button size="sm">+ Convidar membro</Button>}
+            action={<Button size="sm" onClick={demoAction("Email de convite enviado")}>+ Convidar membro</Button>}
           />
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">
@@ -96,7 +97,7 @@ export default function EquipePage() {
                       </div>
                     </td>
                     <td className="py-3 text-right">
-                      <Button variant="secondary" size="sm">Gerenciar</Button>
+                      <Button variant="secondary" size="sm" onClick={demoAction("Abrindo permissões", "info")}>Gerenciar</Button>
                     </td>
                   </tr>
                 ))}
