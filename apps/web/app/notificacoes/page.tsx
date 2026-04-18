@@ -56,19 +56,19 @@ export default function NotificacoesPage() {
   return (
     <AppShell>
       <Topbar title="Notificações" subtitle={`${naoLidas} não lidas · últimos 7 dias`} />
-      <div className="px-6 lg:px-10 py-6 space-y-6">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Não lidas</div>
-            <div className="text-3xl font-semibold text-primary tnum">{naoLidas}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-primary tnum">{naoLidas}</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Alertas clínicos</div>
-            <div className="text-3xl font-semibold text-ember tnum">{alertasClinicos}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-ember tnum">{alertasClinicos}</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Hoje</div>
-            <div className="text-3xl font-semibold text-text tnum">{hoje}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">{hoje}</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Canais</div>

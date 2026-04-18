@@ -37,31 +37,31 @@ export default function RelatoriosPage() {
   return (
     <AppShell>
       <Topbar title="Relatórios clínicos" subtitle="Cohort k-anonymized · evidence lab" />
-      <div className="px-6 lg:px-10 py-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">TTE médio</div>
-            <div className="text-3xl font-semibold text-text tnum">12d</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">12d</div>
             <div className="text-xs text-leaf mt-1">↓ 68% vs média BR (37d)</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Aderência tracker</div>
-            <div className="text-3xl font-semibold text-text tnum">82%</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">82%</div>
             <div className="text-xs text-muted mt-1">log ≥4x/semana</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Redução dor (média)</div>
-            <div className="text-3xl font-semibold text-leaf tnum">-43%</div>
+            <div className="text-2xl md:text-3xl font-semibold text-leaf tnum">-43%</div>
             <div className="text-xs text-muted mt-1">8 semanas</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Eventos adversos</div>
-            <div className="text-3xl font-semibold text-text tnum">6%</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">6%</div>
             <div className="text-xs text-muted mt-1">dose ajustada, sem desfecho grave</div>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
           <Card>
             <CardHeader title="Antes → Depois (8 semanas, média cohort)" />
             <div className="space-y-3 mt-4">

@@ -51,25 +51,25 @@ export default function CatalogoPage() {
   return (
     <AppShell>
       <Topbar title="Catálogo de produtos" subtitle={`${PRODUTOS.length} SKUs · Verdemed, Prati, Aurora, Bedrocan…`} />
-      <div className="px-6 lg:px-10 py-6 space-y-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Produtos ativos</div>
-            <div className="text-3xl font-semibold text-text tnum">{PRODUTOS.length}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">{PRODUTOS.length}</div>
             <div className="text-xs text-muted mt-1">26 fabricantes BR+global</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Industrializados BR</div>
-            <div className="text-3xl font-semibold text-leaf tnum">{PRODUTOS.filter(p => p.rota === "Industrializado" || p.rota === "Autorizada").length}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-leaf tnum">{PRODUTOS.filter(p => p.rota === "Industrializado" || p.rota === "Autorizada").length}</div>
             <div className="text-xs text-muted mt-1">não requer RDC 660</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Importação RDC 660</div>
-            <div className="text-3xl font-semibold text-ochre tnum">{PRODUTOS.filter(p => p.rota === "RDC 660").length}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-ochre tnum">{PRODUTOS.filter(p => p.rota === "RDC 660").length}</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Preço médio</div>
-            <div className="text-3xl font-semibold text-text tnum">R$ {Math.round(totalValor / filtrados.length || 0)}</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">R$ {Math.round(totalValor / filtrados.length || 0)}</div>
             <div className="text-xs text-muted mt-1">30mL ou unidade</div>
           </Card>
         </div>

@@ -138,8 +138,8 @@ export default function MensagensPage() {
   return (
     <AppShell>
       <Topbar title="Mensagens" subtitle="WhatsApp Business · templates aprovados ANVISA" />
-      <div className="px-6 lg:px-10 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <Card className="md:col-span-1 p-0 overflow-hidden">
             <div className="p-4 border-b border-border">
               <input

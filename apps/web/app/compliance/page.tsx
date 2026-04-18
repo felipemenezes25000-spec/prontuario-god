@@ -35,21 +35,21 @@ export default function CompliancePage() {
   return (
     <AppShell>
       <Topbar title="Compliance · LGPD · Auditoria" subtitle="Hash-chain · 1.842 eventos · integridade OK" />
-      <div className="px-6 lg:px-10 py-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Eventos audit</div>
-            <div className="text-3xl font-semibold text-text tnum">1.842</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">1.842</div>
             <div className="text-xs text-muted mt-1">últimos 30d</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Hash chain</div>
-            <div className="text-3xl font-semibold text-leaf tnum">OK</div>
+            <div className="text-2xl md:text-3xl font-semibold text-leaf tnum">OK</div>
             <div className="text-xs text-muted mt-1">tamper-evident</div>
           </Card>
           <Card>
             <div className="text-xs text-muted uppercase tracking-wide mb-1">Consentimentos ativos</div>
-            <div className="text-3xl font-semibold text-text tnum">196</div>
+            <div className="text-2xl md:text-3xl font-semibold text-text tnum">196</div>
             <div className="text-xs text-muted mt-1">pacientes · 3 finalidades</div>
           </Card>
           <Card>

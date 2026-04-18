@@ -23,8 +23,8 @@ export default function ConfiguracoesPage() {
   return (
     <AppShell>
       <Topbar title="Configurações" subtitle="Perfil, clínica, integrações, preferências" />
-      <div className="px-6 lg:px-10 py-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <Card>
             <CardHeader title="Perfil médico" />
             <div className="mt-4 space-y-3 text-sm">
