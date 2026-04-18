@@ -52,14 +52,16 @@ export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () =>
   if (!open) return null;
   return (
     <div className="lg:hidden fixed inset-0 z-50 flex">
+      {/* Drawer à ESQUERDA (mesmo lado do hamburger) */}
+      <aside className="w-[280px] max-w-[85vw] bg-sidebar text-sidebarText flex flex-col border-r border-sidebar2 animate-slide-right shadow-2xl">
+        <SidebarContent onNavigate={onClose} />
+      </aside>
+      {/* Backdrop clicável do lado direito */}
       <button
         onClick={onClose}
         aria-label="fechar menu"
-        className="flex-1 bg-sidebar/60 backdrop-blur-sm"
+        className="flex-1 bg-black/50 backdrop-blur-sm"
       />
-      <aside className="w-[260px] bg-sidebar text-sidebarText flex flex-col border-l border-sidebar2 animate-rise">
-        <SidebarContent onNavigate={onClose} />
-      </aside>
     </div>
   );
 }
