@@ -36,7 +36,7 @@ const RDC660 = [
 export default function RelatoriosPage() {
   return (
     <AppShell>
-      <Topbar title="Relatórios clínicos" subtitle="Cohort k-anonymized · evidence lab" />
+      <Topbar title="Relatórios clínicos" subtitle="Coorte anonimizada (k≥5) · Lab de evidências" />
       <div className="px-4 md:px-6 lg:px-10 py-4 md:py-6 space-y-4 md:space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card>
@@ -85,7 +85,7 @@ export default function RelatoriosPage() {
               ))}
             </div>
             <div className="text-[10px] text-muted mt-4">
-              Dados anonimizados, k&ge;5. Publicável como evidência mundial real (M8 Evidence Lab).
+              Dados anonimizados, k≥5. Publicável como evidência do mundo real (M8 · Lab de Evidências).
             </div>
           </Card>
 
@@ -112,7 +112,7 @@ export default function RelatoriosPage() {
 
         <Card>
           <CardHeader
-            title="Cohort por CID"
+            title="Coorte por CID"
             action={<Button variant="secondary" size="sm" onClick={demoAction("CSV anonimizado (k≥5) baixado")}>Exportar CSV (anonimizado)</Button>}
           />
           <div className="mt-3 overflow-x-auto">

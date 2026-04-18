@@ -113,7 +113,7 @@ export default function FinanceiroPage() {
             <div><div className="text-xs text-muted uppercase">Uso</div><div className="text-text font-medium tnum">32/200h telemed</div></div>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
-            <Button variant="secondary" size="sm" onClick={() => toast.show("Redirecionando para Stripe Billing Portal", "info")}>Upgrade plano</Button>
+            <Button variant="secondary" size="sm" onClick={() => toast.show("Redirecionando para o portal de pagamentos", "info")}>Mudar plano</Button>
             <Button variant="secondary" size="sm" onClick={() => toast.show("NFSe do plano baixada", "success")}>Baixar NF</Button>
             <Button variant="secondary" size="sm" onClick={() => toast.show("Abrindo opções de pagamento", "info")}>Alterar forma</Button>
           </div>

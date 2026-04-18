@@ -77,7 +77,7 @@ export default function Landing() {
                 <div className="relative bg-surface rounded-2xl shadow-floating p-5 md:p-6 border border-border">
                   <div className="flex items-center gap-2 mb-5">
                     <span className="w-2 h-2 rounded-full bg-success animate-pulseSoft" />
-                    <span className="text-xs font-medium text-muted uppercase tracking-wide">Cohort ao vivo · n=196 · k≥5</span>
+                    <span className="text-xs font-medium text-muted uppercase tracking-wide">Coorte ao vivo · n=196 · k≥5</span>
                   </div>
 
                   <div className="space-y-5">
@@ -187,13 +187,13 @@ export default function Landing() {
             {[
               { num: "M1", titulo: "Co-Pilot de Titulação", desc: "Protocolos Padrão / Conservador / Rápido (Delphi 2021). Motor de regras para interações medicamentosas. Sugestão de dose baseada em peso+idade+comorbidades.", gem: "Gemini 2.5 Flash Lite" },
               { num: "M2", titulo: "Prontuário cannabis-first", desc: "SOAP estruturado por IA a partir do áudio. CID-10 sugerido. Red flags verificados em tempo real (ideação, EA grave).", gem: "GPT-4o-mini" },
-              { num: "M3", titulo: "Receituário ANVISA", desc: "Tipo A/B automático conforme concentração. NR serializada. Ofício RDC 660 pré-preenchido com 2 anos de validade.", gem: "Determinístico (CFM-safe)" },
+              { num: "M3", titulo: "Receituário ANVISA", desc: "Tipo A/B automático conforme concentração. NR serializada. Ofício RDC 660 pré-preenchido com 2 anos de validade.", gem: "Determinístico (seguro p/ CFM)" },
               { num: "M4", titulo: "Tracker sintoma-first", desc: "Paciente loga dor/sono/humor via app ou WhatsApp. Escala visual 1-10. Insights semanais com IA.", gem: "Gemini Flash Lite" },
-              { num: "M5", titulo: "Telemedicina + brief IA", desc: "LiveKit self-host BR. Gravação automática. Transcrição Whisper. Brief pré-consulta gerado do histórico.", gem: "Whisper self-host + GPT-4o-mini" },
-              { num: "M6", titulo: "Trilho 14d (logística)", desc: "Integração com distribuidores. Rastreio ANVISA. Alerta de validade RDC 660 com 6 meses de antecedência.", gem: "Rule engine + webhook" },
+              { num: "M5", titulo: "Telemedicina + resumo IA", desc: "LiveKit hospedado no BR. Gravação automática. Transcrição Whisper. Resumo pré-consulta gerado do histórico.", gem: "Whisper próprio + GPT-4o-mini" },
+              { num: "M6", titulo: "Trilho 14d (logística)", desc: "Integração com distribuidores. Rastreio ANVISA. Alerta de validade RDC 660 com 6 meses de antecedência.", gem: "Motor de regras + webhook" },
               { num: "M7", titulo: "Marketplace transparente", desc: "Catálogo 40+ SKUs (Prati, Aurora, Bedrocan, HempMeds). Preços comparados. Ratio CBD:THC filtrado.", gem: "—" },
-              { num: "M8", titulo: "Cohort & Evidence Lab", desc: "Dados anonimizados (k≥5) + differential privacy. Publicável como evidência real-world brasileira.", gem: "Estatística clássica + IA" },
-              { num: "M11", titulo: "Compliance Engine", desc: "Audit hash-chained (tamper-evident). Soft-delete 20 anos CFM 1.821. Consent granular LGPD art.11.", gem: "SHA-256 chain" },
+              { num: "M8", titulo: "Coorte & Lab de Evidências", desc: "Dados anonimizados (k≥5) + privacidade diferencial. Publicável como evidência do mundo real brasileiro.", gem: "Estatística clássica + IA" },
+              { num: "M11", titulo: "Motor de Compliance", desc: "Audit hash-chained (tamper-evident). Soft-delete 20 anos CFM 1.821. Consent granular LGPD art.11.", gem: "SHA-256 chain" },
             ].map((m) => (
               <div key={m.num} className="bg-bg border border-border rounded-xl p-5 hover:border-primary/40 hover:shadow-cardHover transition-all group">
                 <div className="flex items-center justify-between mb-3">
@@ -233,7 +233,7 @@ export default function Landing() {
                 { r: "Tipo A/B automático por concentração", m: true, i: false, a: false },
                 { r: "Ofício RDC 660 pré-preenchido", m: true, i: false, a: false },
                 { r: "Co-Pilot de titulação CBD:THC", m: true, i: false, a: false },
-                { r: "Cohort nacional anonimizada", m: true, i: false, a: false },
+                { r: "Coorte nacional anonimizada", m: true, i: false, a: false },
                 { r: "Catálogo cannabis com ratios", m: true, i: false, a: false },
                 { r: "Tracker sintoma-first (paciente)", m: true, i: false, a: false },
                 { r: "SOAP auto da consulta por IA", m: true, i: "parcial", a: false },
@@ -390,7 +390,7 @@ export default function Landing() {
               priceSuffix="/mês"
               recommended
               hint="médico autônomo · até 200 pacientes"
-              features={["Tudo do Wedge", "Pacientes ilimitados", "Assinatura ICP-Brasil (1 cert)", "RDC 660 auto-tracking", "WhatsApp Business templates", "Cohort Lab · insights IA", "Suporte 48h"]}
+              features={["Tudo do Wedge", "Pacientes ilimitados", "Assinatura ICP-Brasil (1 cert)", "Acompanhamento RDC 660 automático", "WhatsApp Business com modelos", "Coorte Lab · insights IA", "Suporte 48h"]}
               cta="Assinar Solo"
             />
             <PriceCard
@@ -398,7 +398,7 @@ export default function Landing() {
               price="R$499"
               priceSuffix="/mês"
               hint="até 5 médicos · 1000 pacientes"
-              features={["Tudo do Solo", "Multi-médico RBAC (5)", "5 certificados ICP", "Relatórios epidemiológicos", "API de integração", "Dashboard consolidado", "Suporte 24h"]}
+              features={["Tudo do Solo", "Multi-médico com permissões (5)", "5 certificados ICP", "Relatórios epidemiológicos", "API de integração", "Painel consolidado", "Suporte 24h"]}
               cta="Falar com vendas"
             />
           </div>

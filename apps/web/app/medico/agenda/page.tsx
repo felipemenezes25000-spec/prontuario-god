@@ -199,11 +199,11 @@ export default function AgendaPage() {
               <span className="text-text">{consultaDetalhe.tipo}</span>
             </div>
             <div className="border-l-2 border-primary/40 pl-3 py-2 text-muted text-xs">
-              <div className="text-text font-medium mb-1">Brief pré-consulta</div>
+              <div className="text-text font-medium mb-1">Resumo pré-consulta</div>
               Paciente {consultaDetalhe.paciente} em acompanhamento — último tracker log com melhora de 42% nas dores nos últimos 30 dias. Dose atual estável. Avaliar ajustes conforme relato.
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <Button variant="secondary" size="sm" onClick={() => { toast.show("✨ Brief IA atualizado", "success"); }}>✨ Regerar brief</Button>
+              <Button variant="secondary" size="sm" onClick={() => { toast.show("✨ Resumo IA atualizado", "success"); }}>✨ Regerar resumo</Button>
               <Button variant="secondary" size="sm" onClick={() => { toast.show("Lembrete enviado", "success"); }}>📱 Lembrar</Button>
               <Button variant="secondary" size="sm" onClick={() => { toast.show("Consulta cancelada", "info"); setConsultas((a) => a.filter((x) => x !== consultaDetalhe)); setConsultaDetalhe(null); }}>✕ Cancelar</Button>
             </div>

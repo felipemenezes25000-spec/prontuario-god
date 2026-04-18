@@ -66,9 +66,9 @@ const CID_SUGERIDOS = [
 // SOAP gerado (chunks que vão aparecendo)
 const SOAP_CHUNKS = {
   S: "Paciente refere melhora significativa da dor (7→4 na EVA), normalização do padrão de sono, redução da ansiedade. Adesão plena ao CBD 20mg BID. Mantém duloxetina 60mg/d e pregabalina 150mg BID. Efeito adverso leve: sonolência matinal autolimitada + xerostomia esporádica.",
-  O: "Consulta de retorno 14 dias pós ajuste. Pacient lúcida, orientada, deambulando sem auxílio. Sem sinais de intoxicação ou hipotensão postural. Peso estável (68kg). PA 118x74. Exame físico sem alterações.",
-  A: "Fibromialgia (M79.7) em boa resposta à titulação CBD 20:1, 40mg/dia. Comorbidade depressão (F32.1) controlada. Efeitos adversos brandos, sem indicação de suspensão. Cohort Meridiana (n=23) mostra TTE médio 12d — paciente dentro do esperado.",
-  P: "1) Manter CBD full-spectrum 20mg sublingual BID; 2) Considerar reduzir pregabalina para 225mg/d em 15d se sonolência persistir; 3) Solicitar função hepática + hemograma controle; 4) Retorno em 30d; 5) Orientar registro contínuo no tracker app.",
+  O: "Consulta de retorno 14 dias pós ajuste. Paciente lúcida, orientada, deambulando sem auxílio. Sem sinais de intoxicação ou hipotensão postural. Peso estável (68kg). PA 118x74. Exame físico sem alterações.",
+  A: "Fibromialgia (M79.7) em boa resposta à titulação CBD 20:1, 40mg/dia. Comorbidade depressão (F32.1) controlada. Efeitos adversos brandos, sem indicação de suspensão. Coorte Meridiana (n=23) mostra TTE médio 12d — paciente dentro do esperado.",
+  P: "1) Manter CBD full-spectrum 20mg sublingual BID; 2) Considerar reduzir pregabalina para 225mg/d em 15d se sonolência persistir; 3) Solicitar função hepática + hemograma controle; 4) Retorno em 30d; 5) Orientar registro contínuo no app do paciente.",
 };
 
 const EXAMES_SUGERIDOS = [
@@ -137,7 +137,7 @@ export function ConsultaIAAvancada({ pacienteNome }: { pacienteNome: string }) {
     setSintomasVisiveis(0);
     setSoapGenerado({ S: "", O: "", A: "", P: "" });
     setFinalizada(false);
-    toast.show("🎙 Gravação iniciada · Whisper self-hosted (BR)", "info");
+    toast.show("🎙 Gravação iniciada · Whisper próprio (hospedado no BR)", "info");
   }
 
   function parar() {
@@ -280,7 +280,7 @@ export function ConsultaIAAvancada({ pacienteNome }: { pacienteNome: string }) {
               <div className="flex items-center gap-2">
                 <span className="text-leaf text-lg">✓</span>
                 <div>
-                  <div className="text-sm font-medium text-text">Sem red flags</div>
+                  <div className="text-sm font-medium text-text">Sem sinais de alerta</div>
                   <div className="text-xs text-muted">Ideação suicida, dor refratária &gt;8, eventos adversos graves — nenhum detectado.</div>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export function ConsultaIAAvancada({ pacienteNome }: { pacienteNome: string }) {
         </Card>
       )}
 
-      {/* Dose calculator + Cohort comparison */}
+      {/* Cálculo de dose + Comparação com coorte */}
       {sintomasVisiveis > 2 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
@@ -376,7 +376,7 @@ export function ConsultaIAAvancada({ pacienteNome }: { pacienteNome: string }) {
           </Card>
 
           <Card>
-            <CardHeader title="Comparação com cohort (k=23)" />
+            <CardHeader title="Comparação com coorte (n=23)" />
             <div className="mt-3 space-y-3">
               {[
                 { label: "Dor (0-10)", paciente: 4, cohort: 4.5, unidade: "" },

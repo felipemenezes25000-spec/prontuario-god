@@ -30,7 +30,7 @@ const INIT: Membro[] = [
   { id: "6", iniciais: "FC", nome: "Fernanda Cavalcanti", crm: "—", esp: ["Financeiro"], role: "financeiro", pacientes: 0, status: "offline", email: "fernanda@meridiana.health" },
 ];
 
-const ROLE_LABEL: Record<string, string> = { owner: "Owner", admin: "Admin", medico: "Médico", recepcao: "Recepção", financeiro: "Financeiro" };
+const ROLE_LABEL: Record<string, string> = { owner: "Proprietário", admin: "Admin", medico: "Médico", recepcao: "Recepção", financeiro: "Financeiro" };
 
 export default function EquipePage() {
   const toast = useToast();
@@ -208,7 +208,7 @@ export default function EquipePage() {
               </div>
             </div>
             {gerenciar.role === "owner" && (
-              <div className="text-xs text-muted italic border-l-2 border-primary/30 pl-2">Owner tem todas as permissões — não é possível alterar.</div>
+              <div className="text-xs text-muted italic border-l-2 border-primary/30 pl-2">O proprietário tem todas as permissões — não é possível alterar.</div>
             )}
           </div>
         )}

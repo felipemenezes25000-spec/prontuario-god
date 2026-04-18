@@ -26,7 +26,7 @@ const INITIAL: Notif[] = [
   { id: "n4", hora: "há 2h", tipo: "rdc660_alerta", titulo: "RDC 660 vencendo em 27 dias", desc: "Paciente: Henrique Dias · Renovação recomendada", cor: "ochre", lida: false, acao: "Iniciar renovação", acaoFeedback: "Renovação RDC 660 iniciada — ofício gerado" },
   { id: "n5", hora: "há 4h", tipo: "tracker", titulo: "Cláudia Souza — sem log há 7 dias", desc: "Último tracker log em 10 abr. Enviar cobrança via WhatsApp?", cor: "ochre", lida: true, acao: "Cobrar", acaoFeedback: "Lembrete enviado via WhatsApp" },
   { id: "n6", hora: "ontem", tipo: "sistema", titulo: "Nova versão do Co-Pilot disponível", desc: "Protocolos atualizados com dados Delphi 2026. Aceitar atualização?", cor: "sky", lida: true, acao: "Ver changelog", acaoFeedback: "Changelog aberto" },
-  { id: "n7", hora: "ontem", tipo: "consulta", titulo: "Telemed confirmada com Rosa Albuquerque", desc: "Amanhã 11:30 · sala meridiana-abc123", cor: "sky", lida: true, acao: "Preparar brief", acaoFeedback: "Brief pré-consulta gerado (IA)" },
+  { id: "n7", hora: "ontem", tipo: "consulta", titulo: "Telemed confirmada com Rosa Albuquerque", desc: "Amanhã 11:30 · sala meridiana-abc123", cor: "sky", lida: true, acao: "Preparar resumo", acaoFeedback: "Resumo pré-consulta gerado (IA)" },
   { id: "n8", hora: "2d", tipo: "billing", titulo: "Fatura paga — R$ 499", desc: "Plano Clínica · Mar 2026 · PIX recorrente", cor: "leaf", lida: true, acao: "Baixar NF", acaoFeedback: "NFSe baixada" },
   { id: "n9", hora: "3d", tipo: "compliance", titulo: "Audit hash chain verificado", desc: "1.842 eventos · integridade OK", cor: "leaf", lida: true, acao: "Ver relatório", acaoFeedback: "Relatório audit aberto" },
 ];

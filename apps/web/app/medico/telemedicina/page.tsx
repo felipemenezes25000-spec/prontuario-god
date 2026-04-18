@@ -101,7 +101,7 @@ export default function TelemedicinaPage() {
         </Card>
 
         <Card>
-          <CardHeader title="Histórico + briefs" />
+          <CardHeader title="Histórico + resumos" />
           <div className="divide-y divide-border mt-2">
             {HISTORICO.map((h, i) => (
               <div key={i} className="py-4 flex flex-col md:flex-row gap-3 md:gap-4">
@@ -141,7 +141,7 @@ export default function TelemedicinaPage() {
             <ModalField label="Duração"><ModalSelect name="duracao" defaultValue="30"><option value="30">30min</option><option value="45">45min</option><option value="60">60min</option></ModalSelect></ModalField>
             <ModalField label="Tipo"><ModalSelect name="motivo" defaultValue="Retorno"><option>Primeira consulta telemedicina</option><option>Retorno</option><option>Titulação</option><option>Ajuste de dose</option></ModalSelect></ModalField>
           </div>
-          <ModalField label="Brief pré-consulta (gerar com IA)" hint="Deixar em branco = gerar do histórico">
+          <ModalField label="Resumo pré-consulta (gerar com IA)" hint="Deixar em branco = gerar do histórico">
             <ModalTextarea name="brief" rows={3} />
           </ModalField>
           <label className="flex items-center gap-2 text-xs text-muted">
@@ -162,7 +162,7 @@ export default function TelemedicinaPage() {
         size="xl"
         footer={
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            <Button variant="secondary" onClick={() => toast.show("✨ Brief regenerado", "success")}>✨ Brief IA</Button>
+            <Button variant="secondary" onClick={() => toast.show("✨ Resumo regenerado", "success")}>✨ Resumo IA</Button>
             <Button variant="secondary" onClick={() => toast.show("Gravação pausada", "info")}>⏸ Pausar</Button>
             <Button onClick={finalizar}>Encerrar</Button>
           </div>
@@ -210,7 +210,7 @@ export default function TelemedicinaPage() {
         {transcricao && (
           <div className="space-y-3 text-sm">
             <div className="border-l-2 border-primary/40 pl-3 py-1 text-muted text-xs">
-              <strong className="text-text">Brief (IA):</strong> {transcricao.brief}
+              <strong className="text-text">Resumo (IA):</strong> {transcricao.brief}
             </div>
             <div className="bg-surface rounded-lg p-3 md:p-4 font-mono text-xs text-text leading-relaxed max-h-80 overflow-y-auto">
               <div className="text-muted mb-2">[00:00] <strong>Dra. Ana</strong></div>
